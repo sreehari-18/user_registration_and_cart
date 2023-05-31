@@ -1,0 +1,122 @@
+import sys
+
+
+database = []
+user = None  
+
+
+class User:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+
+class Item:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+
+def register():
+    username = input("Enter your username: ")
+    password = input("Enter your password: ")
+    user = User(username, password)  
+    return user
+
+
+def login():
+    username = input("Enter your username: ")
+    password = input("Enter your password: ")
+    for u in database:
+        if u.username == username and u.password == password:
+            return u
+    return None
+
+
+class Cart:
+    def __init__(self):
+        self.items = []
+        self.total_quantity = 0
+
+    def add_item(self, item, quantity):
+        self.items.append((item, quantity))
+        self.total_quantity += quantity
+
+    def remove_item(self, item):
+        for i, (cart_item, quantity) in enumerate(self.items):
+            if cart_item == item:
+                self.total_quantity -= quantity
+                self.items.pop(i)
+                break
+
+
+def display_cart(cart):
+    print("Cart Items:")
+    for item, quantity in cart.items:
+        print(f"Item: {item.name}, Quantity: {quantity}")
+    print(f"Total Quantity: {cart.total_quantity}")
+
+
+def main():
+    global user  
+    while True:
+        print("\n1. Register")
+        print("2. Login")
+        print("3. Add item to cart")
+        print("4. Remove item from cart")
+        print("5. Display cart")
+        print("6. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            user = register()
+            database.append(user)
+            print("Registration successful!")
+        elif choice == "2":
+            user = login()
+            if user:
+                print("Login successful!")
+                cart = Cart()
+            else:
+                print("Invalid username or password!")
+                continue
+        elif choice == "3":
+            if not user:
+                print("Please login first!")
+                continue
+            item_name = input("Enter item name: ")
+            item_price = float(input("Enter item price: "))
+            item = Item(item_name, item_price)
+            quantity = int(input("Enter quantity: "))
+            cart.add_item(item, quantity)
+            print("Item added to cart!")
+        elif choice == "4":
+            if not user:
+                print("Please login first!")
+                continue
+            item_name = input("Enter item name to remove from cart: ")
+            item = None
+            for cart_item, _ in cart.items:
+                if cart_item.name == item_name:
+                    item = cart_item
+                    break
+            if item:
+                cart.remove_item(item)
+                print("Item removed from cart!")
+            else:
+                print("Item not found in cart!")
+        elif choice == "5":
+            if not user:
+                print("Please login first!")
+                continue
+            display_cart(cart)
+        elif choice == "6":
+            print("Thank you for using the program!")
+            sys.exit()
+        else:
+            print("Invalid choice!")
+
+
+if __name__ == "__main__":
+    main()
